@@ -1,0 +1,102 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Scanner;
+
+public class Sample {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        int choice;
+        do {
+            printMenu();
+            choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    getWeather(scanner);
+                    break;
+                case 2:
+                    getWindSpeed(scanner);
+                    break;
+                case 3:
+                    getPressure(scanner);
+                    break;
+                case 0:
+                    System.out.println("Exiting the program. Goodbye!");
+                    break;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        } while (choice != 0);
+
+        scanner.close();
+    }
+
+    private static void printMenu() {
+        System.out.println("1. Get weather");
+        System.out.println("2. Get Wind Speed");
+        System.out.println("3. Get Pressure");
+        System.out.println("0. Exit");
+        System.out.print("Enter your choice: ");
+    }
+
+    private static void getWeather(Scanner scanner) {
+        System.out.print("Enter the date (YYYY-MM-DD): ");
+        String date = scanner.next();
+        String apiKey = "YOUR_OPENWEATHERMAP_API_KEY";
+        String weather = getWeatherData(date, apiKey);
+        System.out.println("Weather on " + date + " in London: " + weather);
+    }
+
+    private static void getWindSpeed(Scanner scanner) {
+        System.out.print("Enter the date (YYYY-MM-DD): ");
+        String date = scanner.next();
+        String apiKey = "YOUR_OPENWEATHERMAP_API_KEY";
+        String windSpeed = getWindSpeedData(date, apiKey);
+        System.out.println("Wind Speed on " + date + " in London: " + windSpeed + " m/s");
+    }
+
+    private static void getPressure(Scanner scanner) {
+        System.out.print("Enter the date (YYYY-MM-DD): ");
+        String date = scanner.next();
+        String apiKey = "YOUR_OPENWEATHERMAP_API_KEY";
+        String pressure = getPressureData(date, apiKey);
+        System.out.println("Pressure on " + date + " in London: " + pressure + " hPa");
+    }
+
+    private static String getWeatherData(String date, String apiKey) {
+        String url = "http://history.openweathermap.org/data/2.5/history/city?q=London,UK&type=hour&start=" + date + "&cnt=1&appid=" + apiKey;
+        return fetchData(url);
+    }
+
+    private static String getWindSpeedData(String date, String apiKey) {
+        String url = "http://history.openweathermap.org/data/2.5/history/city?q=London,UK&type=hour&start=" + date + "&cnt=1&appid=" + apiKey;
+        return fetchData(url);
+    }
+
+    private static String getPressureData(String date, String apiKey) {
+        String url = "http://history.openweathermap.org/data/2.5/history/city?q=London,UK&type=hour&start=" + date + "&cnt=1&appid=" + apiKey;
+        return fetchData(url);
+    }
+
+    private static String fetchData(String urlString) {
+        StringBuilder response = new StringBuilder();
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return response.toString();
+    }
+}
